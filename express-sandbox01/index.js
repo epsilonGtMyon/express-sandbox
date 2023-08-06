@@ -1,17 +1,15 @@
 import 'dotenv/config'
 
 import express from "express"
+import session from 'express-session'
+import cookieParser from "cookie-parser";
 import helmet from "helmet"
 import morgan from "morgan"
 
 import log4js from "log4js";
 
-
 log4js.configure("./log4js.json");
-
 const logger = log4js.getLogger("index");
-
-
 
 const app = express()
 
@@ -23,6 +21,15 @@ app.set("view engine", "ejs");
 
 app.use(morgan("dev"))
 app.use(helmet())
+app.use(cookieParser())
+app.use(session({
+  // とりあえずテキトーに
+  secret: 'keyboard cat',
+  name: `my-session`,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}))
 
 app.use(express.static('public'))
 app.use(express.json())
@@ -35,7 +42,7 @@ app.get('/', (req, res) => {
 
 //---------------------------
 // routes
-import sandbox01Routes from "./app/endpoints/sandbox01/sandbox01Routes.js"
+import sandbox01Routes from "./src/endpoints/sandbox01/sandbox01Routes.js"
 sandbox01Routes.setup(app)
 
 const port = Number(process.env.port ?? "80")

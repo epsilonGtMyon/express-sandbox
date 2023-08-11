@@ -7,7 +7,7 @@ router.get("/", sandbox01.index);
 router.get("/findUsers", sandbox01.findUsers);
 
 function setup(app) {
-  app.use("/sandbox01", router);
+  app.use(`/sandbox01`, router);
 }
 
 export default {

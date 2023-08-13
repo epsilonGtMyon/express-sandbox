@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <style>
+      .console-container {
+        background-color: rgb(10, 10, 10);
+        color: rgb(255, 255, 255);
+        overflow-y: scroll;
+        height: calc(100vh - 170px);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>sandbox03</h1>
+
+    <div>
+      <div>
+        <label
+          >value01
+          <input id="value01" type="text" />
+        </label>
+      </div>
+      <div>
+        <label
+          >value02
+          <input id="value02" type="text" />
+        </label>
+      </div>
+    </div>
+
+    <button id="post1">post1</button>
+    <button id="post2">post2</button>
+
+    <div>
+      <div id="consoleArea" class="console-container"></div>
+    </div>
+
+    <script>
+      (function () {
+        const urlPrefix = `/sandbox03`;
+        const consoleAreaElem = document.getElementById("consoleArea");
+        const value01Elem = document.getElementById("value01");
+        const value02Elem = document.getElementById("value02");
+        const post1Elem = document.getElementById("post1");
+        const post2Elem = document.getElementById("post2");
+
+        post1Elem.addEventListener("click", async () => {
+          const param = {
+            value01: value01Elem.value,
+            value02: value02Elem.value,
+          };
+
+          const r = await fetch(`${urlPrefix}/post1`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(param),
+          });
+
+          consoleArea.textContent = r.status + ":" + (await r.text());
+        });
+        
+        post2Elem.addEventListener("click", async () => {
+          const param = {
+            value01: value01Elem.value,
+            value02: value02Elem.value,
+          };
+
+          const r = await fetch(`${urlPrefix}/post2`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(param),
+          });
+
+          consoleArea.textContent = r.status + ":" + (await r.text());
+        });
+      })();
+    </script>
+  </body>
+</html>

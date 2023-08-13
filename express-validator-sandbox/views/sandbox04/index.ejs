@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <style>
+      .console-container {
+        background-color: rgb(10, 10, 10);
+        color: rgb(255, 255, 255);
+        overflow-y: scroll;
+        height: calc(100vh - 170px);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>sandbox04</h1>
+    <div id="app">
+      <div>
+        <div>
+          ネストと明細の検証
+          <div>
+            <label
+              >値1
+              <input type="text" v-model="value01" />
+            </label>
+          </div>
+          <div>
+            部署
+            <div>
+              <label
+                >名前:
+                <input type="text" v-model="department.name" />
+              </label>
+            </div>
+          </div>
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th>姓</th>
+                  <th>名</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="(user, idx) in users">
+                  <tr>
+                    <td>
+                      <input type="text" v-model="user.familyName" />
+                    </td>
+                    <td>
+                      <input type="text" v-model="user.firstName" />
+                    </td>
+                    <td>
+                      <button @click="remove(idx)">削除</button>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+            <div>
+              <button @click="addRecord">追加</button>
+            </div>
+          </div>
+          <div>
+            <button @click="send1">送信1</button>
+            <button @click="send2">送信2</button>
+          </div>
+        </div>
+        <div class="console-container">
+          {{ consoleText }}
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import {
+        createApp,
+        onMounted,
+        ref,
+        reactive,
+      } from "https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js";
+
+      createApp({
+        setup() {
+          const urlPrefix = `/sandbox04`;
+          const value01 = ref("");
+          const department = reactive({
+            name: "",
+          });
+          const users = ref([]);
+          const consoleText = ref("");
+
+          onMounted(() => {
+            users.value.push({ firstName: "太郎", familyName: "田中" });
+          });
+
+          function remove(index) {
+            users.value.splice(index, 1);
+          }
+
+          function addRecord() {
+            users.value.push({ firstName: "", familyName: "" });
+          }
+
+          async function send1() {
+            const r = await fetch(`${urlPrefix}/post1`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                value01: value01.value,
+                department,
+                users: users.value,
+              }),
+            });
+
+            consoleText.value = r.status + ":" + (await r.text());
+          }
+          
+          async function send2() {
+            const r = await fetch(`${urlPrefix}/post2`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                value01: value01.value,
+                department,
+                users: users.value,
+              }),
+            });
+
+            consoleText.value = r.status + ":" + (await r.text());
+          }
+
+          return {
+            value01,
+            department,
+            users,
+            consoleText,
+            remove,
+            addRecord,
+            send1,
+            send2,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

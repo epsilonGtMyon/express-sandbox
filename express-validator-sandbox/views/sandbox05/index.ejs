@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <style>
+      .console-container {
+        background-color: rgb(10, 10, 10);
+        color: rgb(255, 255, 255);
+        overflow-y: scroll;
+        height: calc(100vh - 170px);
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>sandbox05</h1>
+    <div id="app">
+      <div>
+        <div>
+          <h2>スカラー値</h2>
+          <div>
+            <label>
+              scalar01:
+              <input type="text" v-model="scalar01" />
+            </label>
+          </div>
+        </div>
+        <div>
+          <h2>オブジェクト</h2>
+          <div>
+            <h3>部署</h3>
+            <div>
+              <label>
+                departmentName:
+                <input type="text" v-model="department.departmentName" />
+              </label>
+            </div>
+          </div>
+        </div>
+        <button @click="send1">送信1</button>
+        <button @click="send2">送信2</button>
+      </div>
+      <div class="console-container">
+        {{ consoleText }}
+      </div>
+    </div>
+
+    <script type="module">
+      import {
+        createApp,
+        onMounted,
+        ref,
+        reactive,
+      } from "https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js";
+
+      createApp({
+        setup() {
+          const urlPrefix = `/sandbox05`;
+          const scalar01 = ref("");
+          const department = reactive({
+            departmentName: "",
+          });
+          const consoleText = ref("");
+
+          async function send1() {
+            const r = await fetch(`${urlPrefix}/post1`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                scalar01: scalar01.value,
+                department,
+              }),
+            });
+
+            if (r.ok) {
+              consoleText.value = "OK";
+            } else {
+              r.text().then((t) => {
+                const errorObj = JSON.parse(t);
+
+                consoleText.value = errorObj.errors
+                  .map(
+                    (e) => `path=${e.path}, msg=${e.msg}, message=${e.message}`
+                  )
+                  .join("\r\n");
+              });
+            }
+          }
+
+          async function send2() {
+            const r = await fetch(`${urlPrefix}/post2`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                scalar01: scalar01.value,
+                department,
+              }),
+            });
+
+            if (r.ok) {
+              consoleText.value = "OK";
+            } else {
+              r.text().then((t) => {
+                const errorObj = JSON.parse(t);
+
+                consoleText.value = errorObj.errors
+                  .map(
+                    (e) => `path=${e.path}, msg=${e.msg}, message=${e.message}`
+                  )
+                  .join("\r\n");
+              });
+            }
+          }
+
+          return {
+            scalar01,
+            department,
+            consoleText,
+
+            // ---
+            send1,
+            send2,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

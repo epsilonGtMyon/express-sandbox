@@ -1,33 +1,61 @@
-(async function () {
-  class Sandbox01Service {
-    async findUsers() {
-      const findUsersResponse = await fetch("/sandbox01/findUsers");
+import {
+  createApp,
+  onMounted,
+  ref,
+} from "https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js";
+
+createApp({
+  setup() {
+    const urlPrefix = "/sandbox01";
+    const name = ref("");
+    const users = ref([]);
+    const errors = ref({});
+
+    onMounted(async () => {
+      await load();
+    });
+
+    async function load() {
+      const findUsersResponse = await fetch(`${urlPrefix}/findUsers`);
       const findUsersResponseBody = await findUsersResponse.json();
-      const users = findUsersResponseBody.users;
-      return users;
+      users.value = findUsersResponseBody.users;
     }
-  }
 
-  const userTableElem = document.getElementById("userTable");
-  const userTableTbody = userTableElem.querySelector("tbody");
+    async function register() {
+      errors.value = {};
 
-  const sandbox01Service = new Sandbox01Service();
+      const r = await fetch(`${urlPrefix}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.value,
+        }),
+      });
 
-  const users = await sandbox01Service.findUsers();
+      if (r.ok) {
+        name.value = "";
+        await load();
+      } else {
+        if (r.status === 400) {
+          errors.value = (await r.json()).errors.reduce(
+            (er, { path, message }) => {
+              // これだと複数メッセージに対応できていないがまぁいいや
+              er[path] = message;
+              return er;
+            },
+            {}
+          );
+        }
+      }
+    }
 
-  // アクセス
-
-  for (const user of users) {
-    const tr = document.createElement("tr");
-    const idTd = document.createElement("td");
-    const nameTd = document.createElement("td");
-
-    idTd.textContent = user.id;
-    nameTd.textContent = user.name;
-
-    tr.append(idTd);
-    tr.append(nameTd);
-
-    userTableTbody.append(tr);
-  }
-})();
+    return {
+      name,
+      users,
+      errors,
+      register,
+    };
+  },
+}).mount("#app");

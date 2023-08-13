@@ -1,24 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="/sandbox01/script.js" defer></script>
-  <title><%= title %></title>
-</head>
-<body>
-  <h1>sandbox01</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="module" src="/sandbox01/script.js" defer></script>
+    <title><%= title %></title>
+  </head>
+  <body>
+    <h1>sandbox01</h1>
 
-  <table id="userTable">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      
-    </tbody>
-  </table>
-</body>
+    <div id="app">
+      <div>
+        <div>
+          <label
+            >name:
+            <input type="text" v-model="name" />
+            <span>{{errors['name']}}</span>
+          </label>
+        </div>
+
+        <div>
+          <button @click="register">登録</button>
+        </div>
+      </div>
+      <hr />
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="user in users">
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.name }}</td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </body>
 </html>

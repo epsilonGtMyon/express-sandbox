@@ -1,15 +1,14 @@
 require("dotenv").config();
 
-const { PutCommand } = require("@aws-sdk/lib-dynamodb");
-const { docClient } = require("../../common/docClient.js")
+const { GetCommand } = require("@aws-sdk/lib-dynamodb");
+const { docClient } = require("../../common/docClient.js");
 
 async function main() {
-  const command = new PutCommand({
+  const command = new GetCommand({
     TableName: "score",
-    Item: {
+    Key: {
       student: "Taro",
-      subject: `Math`,
-      score_value: 75,
+      subject: "Math",
     },
   });
 

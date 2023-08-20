@@ -13,6 +13,7 @@ async function main() {
               student: "Taro",
               subject: `Math`,
               score_value: 75,
+              note: "がんばった",
             },
           },
         },
@@ -22,6 +23,7 @@ async function main() {
               student: "Taro",
               subject: `Japanese`,
               score_value: 82,
+              note: "すばらしい",
             },
           },
         },
@@ -52,27 +54,29 @@ async function main() {
     },
   ];
 
-  const scores = sourceScores.map((s) => {
-    const scoreItems = [];
-    for (const [k, v] of Object.entries(s)) {
-      if (k === "name") continue;
+  const scores = sourceScores
+    .map((s) => {
+      const scoreItems = [];
+      for (const [k, v] of Object.entries(s)) {
+        if (k === "name") continue;
 
-      scoreItems.push({
-        PutRequest: {
-          Item: {
-            student: s.name,
-            subject: k,
-            score_value: v,
+        scoreItems.push({
+          PutRequest: {
+            Item: {
+              student: s.name,
+              subject: k,
+              score_value: v,
+            },
           },
-        },
-      });
-    }
-    return scoreItems;
-  }).flatMap(s => s);
+        });
+      }
+      return scoreItems;
+    })
+    .flatMap((s) => s);
 
   const command2 = new BatchWriteCommand({
     RequestItems: {
-      score: [...scores]
+      score: [...scores],
     },
   });
 
